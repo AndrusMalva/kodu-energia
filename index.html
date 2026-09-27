@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+
+<html lang="et">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="theme-color" content="#0b1220">
+
+<title>Kodu Energia</title>
+
+<style>
+
+* { box-sizing: border-box; }
+
+body {
+
+  margin: 0;
+
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  background: #0b1220;
+
+  color: white;
+
+}
+
+header {
+
+  padding: 24px;
+
+  background: #111b2e;
+
+}
+
+h1 {
+
+  margin: 0;
+
+  font-size: 30px;
+
+}
+
+.subtitle {
+
+  color: #9ca9bd;
+
+  margin-top: 6px;
+
+}
+
+main {
+
+  padding: 20px;
+
+  max-width: 900px;
+
+  margin: auto;
+
+}
+
+.grid {
+
+  display: grid;
+
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+
+  gap: 16px;
+
+}
+
+.card {
+
+  background: #152238;
+
+  border: 1px solid #263754;
+
+  border-radius: 18px;
+
+  padding: 20px;
+
+}
+
+.card h2 {
+
+  margin-top: 0;
+
+  font-size: 20px;
+
+}
+
+.value {
+
+  font-size: 34px;
+
+  font-weight: 700;
+
+  margin: 12px 0;
+
+}
+
+.status {
+
+  color: #8fa2bd;
+
+}
+
+button {
+
+  width: 100%;
+
+  border: 0;
+
+  border-radius: 12px;
+
+  padding: 14px;
+
+  margin-top: 14px;
+
+  font-size: 17px;
+
+  font-weight: 600;
+
+  background: #2f80ed;
+
+  color: white;
+
+}
+
+button:active {
+
+  transform: scale(.98);
+
+}
+
+.on {
+
+  background: #169c58;
+
+}
+
+.off {
+
+  background: #c44848;
+
+}
+
+footer {
+
+  text-align: center;
+
+  color: #72819a;
+
+  padding: 30px;
+
+  font-size: 13px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+  <h1>⚡ Kodu Energia</h1>
+
+  <div class="subtitle">Kodu energiajuhtimine</div>
+
+</header>
+
+<main>
+
+<div class="grid">
+
+  <div class="card">
+
+    <h2>⚡ Börsihind</h2>
+
+    <div class="value">-- ct/kWh</div>
+
+    <div class="status">Elektrihind lisatakse järgmises etapis</div>
+
+  </div>
+
+  <div class="card">
+
+    <h2>🔥 Boiler</h2>
+
+    <div class="value" id="boilerState">VÄLJAS</div>
+
+    <div class="status">Käsijuhtimine</div>
+
+    <button id="boilerButton" class="off" onclick="toggleBoiler()">
+
+      Lülita sisse
+
+    </button>
+
+  </div>
+
+  <div class="card">
+
+    <h2>🌡️ Põrandaküte</h2>
+
+    <div class="value" id="floorState">VÄLJAS</div>
+
+    <div class="status">Käsijuhtimine</div>
+
+    <button id="floorButton" class="off" onclick="toggleFloor()">
+
+      Lülita sisse
+
+    </button>
+
+  </div>
+
+  <div class="card">
+
+    <h2>🏠 Kodu tarbimine</h2>
+
+    <div class="value">-- kW</div>
+
+    <div class="status">Reaalaja mõõtmine lisatakse hiljem</div>
+
+  </div>
+
+</div>
+
+</main>
+
+<footer>
+
+Kodu Energia • versioon 0.1
+
+</footer>
+
+<script>
+
+let boiler = false;
+
+let floor = false;
+
+function toggleBoiler() {
+
+  boiler = !boiler;
+
+  const state = document.getElementById("boilerState");
+
+  const button = document.getElementById("boilerButton");
+
+  if (boiler) {
+
+    state.textContent = "SEES";
+
+    button.textContent = "Lülita välja";
+
+    button.className = "on";
+
+  } else {
+
+    state.textContent = "VÄLJAS";
+
+    button.textContent = "Lülita sisse";
+
+    button.className = "off";
+
+  }
+
+}
+
+function toggleFloor() {
+
+  floor = !floor;
+
+  const state = document.getElementById("floorState");
+
+  const button = document.getElementById("floorButton");
+
+  if (floor) {
+
+    state.textContent = "SEES";
+
+    button.textContent = "Lülita välja";
+
+    button.className = "on";
+
+  } else {
+
+    state.textContent = "VÄLJAS";
+
+    button.textContent = "Lülita sisse";
+
+    button.className = "off";
+
+  }
+
+}
+
+</script>
+
+</body>
+
+</html>
