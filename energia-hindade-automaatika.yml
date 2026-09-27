@@ -1,0 +1,65 @@
+name: Uuenda börsihindu ja avalda äpp
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sea uus äpp avaleheks
+        run: cp kodu-energia-hinnad.html index.html
+      - name: Laadi Eleringi Eesti börsihinnad
+        run: |
+          python3 - <<'PY'
+          import datetime as dt
+          import json
+          import urllib.parse
+          import urllib.request
+
+          now = dt.datetime.now(dt.timezone.utc)
+          start = now - dt.timedelta(hours=2)
+          end = now + dt.timedelta(hours=40)
+          params = urllib.parse.urlencode({
+              'start': start.isoformat(timespec='seconds').replace('+00:00', 'Z'),
+              'end': end.isoformat(timespec='seconds').replace('+00:00', 'Z'),
+          })
+          url = 'https://dashboard.elering.ee/api/nps/price?' + params
+          request = urllib.request.Request(url, headers={'User-Agent': 'KoduEnergia/1.0'})
+          with urllib.request.urlopen(request, timeout=30) as response:
+              data = json.load(response)
+          prices = [
+              {'timestamp': int(p['timestamp']), 'price': float(p['price'])}
+              for p in data['data']['ee']
+              if p.get('timestamp') is not None and p.get('price') is not None
+          ]
+          if not prices or not any(p['timestamp'] <= now.timestamp() < p['timestamp'] + 900 for p in prices):
+              raise RuntimeError('Praeguse 15-minutilise perioodi Eesti hind puudub')
+          with open('prices.json', 'w', encoding='utf-8') as output:
+              json.dump({'generatedAt': int(now.timestamp()), 'prices': prices}, output,
+                        ensure_ascii=False, separators=(',', ':'))
+          print(f'Laaditud {len(prices)} Eesti börsihinna perioodi')
+          PY
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: '.'
+      - id: deployment
+        uses: actions/deploy-pages@v4
