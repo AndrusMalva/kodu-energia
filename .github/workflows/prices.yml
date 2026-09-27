@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Sea uus äpp avaleheks
-        run: cp kodu-energia-hinnad.html index.html
+        run: cp kodu-energia-graafik.html index.html
       - name: Laadi Eleringi Eesti börsihinnad
         run: |
           python3 - <<'PY'
