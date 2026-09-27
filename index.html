@@ -608,39 +608,7 @@ select {
   <button type="button" onclick="startPairing()">Paarita uus seade</button>
 
 </div>
-    <label>
-
-      Seadme nimi
-
-      <input id="newName" placeholder="Näiteks Esiku põrandaküte">
-
-    </label>
-
-    <label>
-
-      Seadme tüüp
-
-      <select id="newType">
-
-        <option>Põrandaküte</option>
-
-        <option>Boiler</option>
-
-        <option>Infrapunaradiaator</option>
-
-        <option>Muu</option>
-
-      </select>
-
-    </label>
-
-    <div class="modal-buttons">
-
-      <button class="cancel" onclick="closeAdd()">Katkesta</button>
-
-      <button class="save" onclick="addDevice()">Lisa</button>
-
-    </div>
+  
 
   </div>
 
@@ -657,13 +625,26 @@ let devices =
   || defaultDevices;
 function showExistingDevices() {
 
-  alert("Olemasolevate seadmete loend lisame järgmises etapis.");
+  if (devices.length === 0) {
+
+    alert("Ühtegi seadet pole veel lisatud.");
+
+    return;
+
+  }
+
+  const names = devices.map((device, index) =>
+
+    (index + 1) + ". " + device.name
+
+  ).join("\n");
+
+  alert("Olemasolevad seadmed:\n\n" + names);
 
 }
-
 function startPairing() {
 
-  alert("Uue seadme paaritamise lisame järgmises etapis.");
+  alert("Uue seadme paaritamine tehakse telefonis Smart Life / Tuya kaudu. Pärast paaritamist ilmub seade siia olemasolevate seadmete nimekirja.");
 
 }
 function saveLocal() {
