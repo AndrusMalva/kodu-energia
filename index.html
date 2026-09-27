@@ -6,15 +6,41 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<meta name="theme-color" content="#0b1220">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
 <title>Kodu Energia</title>
 
 <style>
 
-* { box-sizing: border-box; }
+:root {
+
+  --bg: #09111f;
+
+  --panel: #131f33;
+
+  --panel2: #192940;
+
+  --line: #2a3d59;
+
+  --text: #f4f7fb;
+
+  --muted: #93a4ba;
+
+  --blue: #3f91ff;
+
+  --green: #35d07f;
+
+  --orange: #ffb44d;
+
+  --red: #ff6262;
+
+}
+
+* {
+
+  box-sizing: border-box;
+
+}
 
 body {
 
@@ -22,21 +48,23 @@ body {
 
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
-  background: #0b1220;
+  background: var(--bg);
 
-  color: white;
+  color: var(--text);
 
 }
 
 header {
 
-  padding: 24px;
+  padding: 24px 20px 18px;
 
-  background: #111b2e;
+  background: #0e192b;
+
+  border-bottom: 1px solid var(--line);
 
 }
 
-h1 {
+header h1 {
 
   margin: 0;
 
@@ -46,37 +74,239 @@ h1 {
 
 .subtitle {
 
-  color: #9ca9bd;
+  margin-top: 5px;
 
-  margin-top: 6px;
+  color: var(--muted);
 
 }
 
 main {
 
-  padding: 20px;
-
-  max-width: 900px;
+  max-width: 1050px;
 
   margin: auto;
 
+  padding: 18px;
+
 }
 
-.grid {
+.top-grid {
 
   display: grid;
 
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: 1fr 1fr;
 
-  gap: 16px;
+  gap: 14px;
+
+  margin-bottom: 16px;
 
 }
 
 .card {
 
-  background: #152238;
+  background: var(--panel);
 
-  border: 1px solid #263754;
+  border: 1px solid var(--line);
+
+  border-radius: 18px;
+
+  padding: 18px;
+
+}
+
+.small {
+
+  color: var(--muted);
+
+  font-size: 13px;
+
+}
+
+.big {
+
+  font-size: 36px;
+
+  font-weight: 700;
+
+  margin-top: 8px;
+
+}
+
+.devices {
+
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 14px;
+
+}
+
+.device-head {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: flex-start;
+
+  gap: 12px;
+
+}
+
+.device-title {
+
+  margin: 0;
+
+  font-size: 20px;
+
+}
+
+.status {
+
+  color: var(--green);
+
+  font-size: 13px;
+
+}
+
+.temp {
+
+  font-size: 42px;
+
+  font-weight: 700;
+
+  margin-top: 16px;
+
+}
+
+.data-grid {
+
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 8px;
+
+  margin-top: 14px;
+
+}
+
+.data-box {
+
+  background: var(--panel2);
+
+  border-radius: 12px;
+
+  padding: 10px;
+
+}
+
+.mode-row {
+
+  display: flex;
+
+  gap: 8px;
+
+  margin-top: 14px;
+
+}
+
+.mode {
+
+  flex: 1;
+
+  border: 0;
+
+  padding: 11px 6px;
+
+  border-radius: 11px;
+
+  background: #26374f;
+
+  color: white;
+
+  font-weight: 600;
+
+}
+
+.mode.active {
+
+  background: var(--green);
+
+  color: #082015;
+
+}
+
+.settings-btn {
+
+  width: 100%;
+
+  margin-top: 10px;
+
+  border: 1px solid var(--line);
+
+  background: #1b2b43;
+
+  color: white;
+
+  border-radius: 11px;
+
+  padding: 12px;
+
+  font-weight: 600;
+
+}
+
+.add-btn {
+
+  width: 100%;
+
+  margin-top: 16px;
+
+  border: 1px dashed var(--blue);
+
+  background: #102542;
+
+  color: #a8ceff;
+
+  border-radius: 14px;
+
+  padding: 15px;
+
+  font-size: 17px;
+
+  font-weight: 700;
+
+}
+
+.modal-bg {
+
+  display: none;
+
+  position: fixed;
+
+  inset: 0;
+
+  background: rgba(0,0,0,.72);
+
+  padding: 18px;
+
+  overflow-y: auto;
+
+  z-index: 100;
+
+}
+
+.modal {
+
+  max-width: 520px;
+
+  margin: 40px auto;
+
+  background: #111e31;
+
+  border: 1px solid var(--line);
 
   border-radius: 18px;
 
@@ -84,79 +314,129 @@ main {
 
 }
 
-.card h2 {
+.modal h2 {
 
   margin-top: 0;
 
-  font-size: 20px;
+}
+
+label {
+
+  display: block;
+
+  margin-top: 12px;
+
+  color: #bac6d6;
+
+  font-size: 14px;
 
 }
 
-.value {
+input,
 
-  font-size: 34px;
-
-  font-weight: 700;
-
-  margin: 12px 0;
-
-}
-
-.status {
-
-  color: #8fa2bd;
-
-}
-
-button {
+select {
 
   width: 100%;
 
+  margin-top: 6px;
+
+  padding: 12px;
+
+  border-radius: 10px;
+
+  border: 1px solid #344963;
+
+  background: #0b1727;
+
+  color: white;
+
+  font-size: 16px;
+
+}
+
+.check-line {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  margin-top: 16px;
+
+}
+
+.check-line input {
+
+  width: auto;
+
+}
+
+.modal-buttons {
+
+  display: flex;
+
+  gap: 10px;
+
+  margin-top: 20px;
+
+}
+
+.save,
+
+.cancel,
+
+.delete {
+
+  flex: 1;
+
   border: 0;
 
-  border-radius: 12px;
+  border-radius: 11px;
 
-  padding: 14px;
+  padding: 12px;
 
-  margin-top: 14px;
+  font-weight: 700;
 
-  font-size: 17px;
+}
 
-  font-weight: 600;
+.save {
 
-  background: #2f80ed;
+  background: var(--green);
+
+}
+
+.cancel {
+
+  background: #35455c;
 
   color: white;
 
 }
 
-button:active {
+.delete {
 
-  transform: scale(.98);
+  background: #772f36;
 
-}
-
-.on {
-
-  background: #169c58;
+  color: white;
 
 }
 
-.off {
+@media(max-width: 720px) {
 
-  background: #c44848;
+  .top-grid,
 
-}
+  .devices {
 
-footer {
+    grid-template-columns: 1fr;
 
-  text-align: center;
+  }
 
-  color: #72819a;
+  main {
 
-  padding: 30px;
+    padding: 12px;
 
-  font-size: 13px;
+  }
 
 }
 
@@ -170,137 +450,591 @@ footer {
 
   <h1>⚡ Kodu Energia</h1>
 
-  <div class="subtitle">Kodu energiajuhtimine</div>
+  <div class="subtitle">Automaatne energiajuhtimine</div>
 
 </header>
 
 <main>
 
-<div class="grid">
+  <section class="top-grid">
 
-  <div class="card">
+    <div class="card">
 
-    <h2>⚡ Börsihind</h2>
+      <div class="small">Börsihind praegu</div>
 
-    <div class="value">-- ct/kWh</div>
+      <div class="big">-- s/kWh</div>
 
-    <div class="status">Elektrihind lisatakse järgmises etapis</div>
+      <div class="small">Päris börsihinna ühendame järgmises etapis</div>
 
-  </div>
+    </div>
 
-  <div class="card">
+    <div class="card">
 
-    <h2>🔥 Boiler</h2>
+      <div class="small">Kodu tarbimine</div>
 
-    <div class="value" id="boilerState">VÄLJAS</div>
+      <div class="big">-- kW</div>
 
-    <div class="status">Käsijuhtimine</div>
+      <div class="small">Reaalaja tarbimise ühendame hiljem</div>
 
-    <button id="boilerButton" class="off" onclick="toggleBoiler()">
+    </div>
 
-      Lülita sisse
+  </section>
 
-    </button>
+  <section id="devices" class="devices"></section>
 
-  </div>
+  <button class="add-btn" onclick="openAdd()">＋ Lisa seade</button>
 
-  <div class="card">
+</main>
 
-    <h2>🌡️ Põrandaküte</h2>
+<div id="settingsBg" class="modal-bg">
 
-    <div class="value" id="floorState">VÄLJAS</div>
+  <div class="modal">
 
-    <div class="status">Käsijuhtimine</div>
+    <h2 id="settingsTitle">Seadme seaded</h2>
 
-    <button id="floorButton" class="off" onclick="toggleFloor()">
+    <input type="hidden" id="editIndex">
 
-      Lülita sisse
+    <label>
 
-    </button>
+      Seadme nimi
 
-  </div>
+      <input id="deviceName">
 
-  <div class="card">
+    </label>
 
-    <h2>🏠 Kodu tarbimine</h2>
+    <label>
 
-    <div class="value">-- kW</div>
+      Seadme tüüp
 
-    <div class="status">Reaalaja mõõtmine lisatakse hiljem</div>
+      <select id="deviceType">
+
+        <option>Boiler</option>
+
+        <option>Põrandaküte</option>
+
+        <option>Infrapunaradiaator</option>
+
+        <option>Muu</option>
+
+      </select>
+
+    </label>
+
+    <label>
+
+      Puhketemperatuur °C
+
+      <input id="restTemp" type="number" step="0.5">
+
+    </label>
+
+    <label>
+
+      Küttetemperatuur °C
+
+      <input id="heatTemp" type="number" step="0.5">
+
+    </label>
+
+    <label>
+
+      Miinimumtemperatuur °C
+
+      <input id="minTemp" type="number" step="0.5">
+
+    </label>
+
+    <label>
+
+      Odavate tundide arv
+
+      <input id="cheapHours" type="number" min="1" max="12">
+
+    </label>
+
+    <label>
+
+      Soovitud temperatuur peab valmis olema kell
+
+      <input id="readyTime" type="time">
+
+    </label>
+
+    <label>
+
+      Odavate tundide kasutamine
+
+      <select id="consecutive">
+
+        <option value="no">Tunnid võivad olla eraldi</option>
+
+        <option value="yes">Tunnid peavad olema järjest</option>
+
+      </select>
+
+    </label>
+
+    <label class="check-line">
+
+      <input id="spotControl" type="checkbox">
+
+      Kasuta börsijuhtimist
+
+    </label>
+
+    <div class="modal-buttons">
+
+      <button class="delete" onclick="deleteDevice()">Kustuta</button>
+
+      <button class="cancel" onclick="closeSettings()">Katkesta</button>
+
+      <button class="save" onclick="saveSettings()">Salvesta</button>
+
+    </div>
 
   </div>
 
 </div>
 
-</main>
+<div id="addBg" class="modal-bg">
 
-<footer>
+  <div class="modal">
 
-Kodu Energia • versioon 0.1
+    <h2>Lisa seade</h2>
 
-</footer>
+    <label>
+
+      Seadme nimi
+
+      <input id="newName" placeholder="Näiteks Esiku põrandaküte">
+
+    </label>
+
+    <label>
+
+      Seadme tüüp
+
+      <select id="newType">
+
+        <option>Põrandaküte</option>
+
+        <option>Boiler</option>
+
+        <option>Infrapunaradiaator</option>
+
+        <option>Muu</option>
+
+      </select>
+
+    </label>
+
+    <div class="modal-buttons">
+
+      <button class="cancel" onclick="closeAdd()">Katkesta</button>
+
+      <button class="save" onclick="addDevice()">Lisa</button>
+
+    </div>
+
+  </div>
+
+</div>
 
 <script>
 
-let boiler = false;
+const defaultDevices = [
 
-let floor = false;
+  {
 
-function toggleBoiler() {
+    name: "Boiler",
 
-  boiler = !boiler;
+    type: "Boiler",
 
-  const state = document.getElementById("boilerState");
+    current: 66.1,
 
-  const button = document.getElementById("boilerButton");
+    mode: "AUTO",
 
-  if (boiler) {
+    restTemp: 50,
 
-    state.textContent = "SEES";
+    heatTemp: 80,
 
-    button.textContent = "Lülita välja";
+    minTemp: 35,
 
-    button.className = "on";
+    cheapHours: 3,
 
-  } else {
+    readyTime: "18:00",
 
-    state.textContent = "VÄLJAS";
+    consecutive: "no",
 
-    button.textContent = "Lülita sisse";
+    spotControl: true
 
-    button.className = "off";
+  },
+
+  {
+
+    name: "Vannitoa põrandaküte",
+
+    type: "Põrandaküte",
+
+    current: 27.0,
+
+    mode: "AUTO",
+
+    restTemp: 20,
+
+    heatTemp: 32,
+
+    minTemp: 20,
+
+    cheapHours: 3,
+
+    readyTime: "17:00",
+
+    consecutive: "no",
+
+    spotControl: true
+
+  },
+
+  {
+
+    name: "Lapse toa infrapunaradiaator",
+
+    type: "Infrapunaradiaator",
+
+    current: 21.5,
+
+    mode: "AUTO",
+
+    restTemp: 20,
+
+    heatTemp: 23,
+
+    minTemp: 19,
+
+    cheapHours: 3,
+
+    readyTime: "17:00",
+
+    consecutive: "no",
+
+    spotControl: true
 
   }
 
+];
+
+let devices =
+
+  JSON.parse(localStorage.getItem("koduEnergiaDevices"))
+
+  || defaultDevices;
+
+function saveLocal() {
+
+  localStorage.setItem(
+
+    "koduEnergiaDevices",
+
+    JSON.stringify(devices)
+
+  );
+
 }
 
-function toggleFloor() {
+function renderDevices() {
 
-  floor = !floor;
+  const box = document.getElementById("devices");
 
-  const state = document.getElementById("floorState");
+  box.innerHTML = "";
 
-  const button = document.getElementById("floorButton");
+  devices.forEach((d, index) => {
 
-  if (floor) {
+    const card = document.createElement("div");
 
-    state.textContent = "SEES";
+    card.className = "card";
 
-    button.textContent = "Lülita välja";
+    card.innerHTML = `
 
-    button.className = "on";
+      <div class="device-head">
 
-  } else {
+        <div>
 
-    state.textContent = "VÄLJAS";
+          <h2 class="device-title">${d.name}</h2>
 
-    button.textContent = "Lülita sisse";
+          <div class="small">${d.type}</div>
 
-    button.className = "off";
+        </div>
+
+        <div class="status">
+
+          ${d.spotControl ? "● Börs AUTO" : "○ Börs väljas"}
+
+        </div>
+
+      </div>
+
+      <div class="temp">
+
+        ${d.current.toFixed(1)} °C
+
+      </div>
+
+      <div class="small">
+
+        Hetketemperatuur
+
+      </div>
+
+      <div class="data-grid">
+
+        <div class="data-box">
+
+          <div class="small">Puhke</div>
+
+          <strong>${d.restTemp} °C</strong>
+
+        </div>
+
+        <div class="data-box">
+
+          <div class="small">Küte</div>
+
+          <strong>${d.heatTemp} °C</strong>
+
+        </div>
+
+        <div class="data-box">
+
+          <div class="small">Odavad tunnid</div>
+
+          <strong>${d.cheapHours} h</strong>
+
+        </div>
+
+        <div class="data-box">
+
+          <div class="small">Valmis</div>
+
+          <strong>${d.readyTime}</strong>
+
+        </div>
+
+      </div>
+
+      <div class="mode-row">
+
+        <button
+
+          class="mode ${d.mode === "AUTO" ? "active" : ""}"
+
+          onclick="setMode(${index}, 'AUTO')">
+
+          AUTO
+
+        </button>
+
+        <button
+
+          class="mode ${d.mode === "KÄSITSI" ? "active" : ""}"
+
+          onclick="setMode(${index}, 'KÄSITSI')">
+
+          KÄSITSI
+
+        </button>
+
+        <button
+
+          class="mode ${d.mode === "VÄLJAS" ? "active" : ""}"
+
+          onclick="setMode(${index}, 'VÄLJAS')">
+
+          VÄLJAS
+
+        </button>
+
+      </div>
+
+      <button
+
+        class="settings-btn"
+
+        onclick="openSettings(${index})">
+
+        ⚙️ Seaded
+
+      </button>
+
+    `;
+
+    box.appendChild(card);
+
+  });
+
+}
+
+function setMode(index, mode) {
+
+  devices[index].mode = mode;
+
+  saveLocal();
+
+  renderDevices();
+
+}
+
+function openSettings(index) {
+
+  const d = devices[index];
+
+  document.getElementById("editIndex").value = index;
+
+  document.getElementById("settingsTitle").innerText = d.name + " – seaded";
+
+  document.getElementById("deviceName").value = d.name;
+
+  document.getElementById("deviceType").value = d.type;
+
+  document.getElementById("restTemp").value = d.restTemp;
+
+  document.getElementById("heatTemp").value = d.heatTemp;
+
+  document.getElementById("minTemp").value = d.minTemp;
+
+  document.getElementById("cheapHours").value = d.cheapHours;
+
+  document.getElementById("readyTime").value = d.readyTime;
+
+  document.getElementById("consecutive").value = d.consecutive;
+
+  document.getElementById("spotControl").checked = d.spotControl;
+
+  document.getElementById("settingsBg").style.display = "block";
+
+}
+
+function closeSettings() {
+
+  document.getElementById("settingsBg").style.display = "none";
+
+}
+
+function saveSettings() {
+
+  const index = Number(document.getElementById("editIndex").value);
+
+  const d = devices[index];
+
+  d.name = document.getElementById("deviceName").value;
+
+  d.type = document.getElementById("deviceType").value;
+
+  d.restTemp = Number(document.getElementById("restTemp").value);
+
+  d.heatTemp = Number(document.getElementById("heatTemp").value);
+
+  d.minTemp = Number(document.getElementById("minTemp").value);
+
+  d.cheapHours = Number(document.getElementById("cheapHours").value);
+
+  d.readyTime = document.getElementById("readyTime").value;
+
+  d.consecutive = document.getElementById("consecutive").value;
+
+  d.spotControl = document.getElementById("spotControl").checked;
+
+  saveLocal();
+
+  closeSettings();
+
+  renderDevices();
+
+}
+
+function deleteDevice() {
+
+  const index = Number(document.getElementById("editIndex").value);
+
+  if (!confirm("Kas kustutada see seade?")) {
+
+    return;
 
   }
 
+  devices.splice(index, 1);
+
+  saveLocal();
+
+  closeSettings();
+
+  renderDevices();
+
 }
+
+function openAdd() {
+
+  document.getElementById("newName").value = "";
+
+  document.getElementById("addBg").style.display = "block";
+
+}
+
+function closeAdd() {
+
+  document.getElementById("addBg").style.display = "none";
+
+}
+
+function addDevice() {
+
+  const name = document.getElementById("newName").value.trim();
+
+  const type = document.getElementById("newType").value;
+
+  if (!name) {
+
+    alert("Sisesta seadme nimi.");
+
+    return;
+
+  }
+
+  devices.push({
+
+    name: name,
+
+    type: type,
+
+    current: 20,
+
+    mode: "AUTO",
+
+    restTemp: 20,
+
+    heatTemp: 25,
+
+    minTemp: 18,
+
+    cheapHours: 3,
+
+    readyTime: "18:00",
+
+    consecutive: "no",
+
+    spotControl: true
+
+  });
+
+  saveLocal();
+
+  closeAdd();
+
+  renderDevices();
+
+}
+
+renderDevices();
 
 </script>
 
