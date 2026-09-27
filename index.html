@@ -482,6 +482,8 @@ select {
 
   <section id="devices" class="devices"></section>
 
+  <p class="small">Seadmete kaardid ja juhtimisrežiimid on praegu plaan. Äpp ei ole veel termostaatidega ühendatud.</p>
+
   <button class="add-btn" onclick="openAdd()">＋ Lisa seade</button>
 
 </main>
@@ -601,13 +603,20 @@ select {
   <div class="modal">
 
     <h2>Lisa seade</h2>
-<div style="display:flex; gap:10px; margin:18px 0;">
-
-  <button type="button" onclick="showExistingDevices()">Lisa olemasolev seade</button>
-
-  <button type="button" onclick="startPairing()">Paarita uus seade</button>
-
-</div>
+    <p>Lisa seade juhtimisplaani. Termostaadiga ühendamine tuleb järgmises etapis.</p>
+    <label>Seadme nimi <input id="newName" placeholder="Näiteks magamistoa põrandaküte"></label>
+    <label>Seadme tüüp
+      <select id="newType">
+        <option>Boiler</option>
+        <option>Põrandaküte</option>
+        <option>Infrapunaradiaator</option>
+        <option>Muu</option>
+      </select>
+    </label>
+    <div class="modal-buttons">
+      <button type="button" class="cancel" onclick="closeAdd()">Sulge</button>
+      <button type="button" class="save" onclick="addDevice()">Lisa plaani</button>
+    </div>
   
 
   </div>
@@ -623,30 +632,6 @@ let devices =
   JSON.parse(localStorage.getItem("koduEnergiaDevices"))
 
   || defaultDevices;
-function showExistingDevices() {
-
-  if (devices.length === 0) {
-
-    alert("Ühtegi seadet pole veel lisatud.");
-
-    return;
-
-  }
-
-  const names = devices.map((device, index) =>
-
-    (index + 1) + ". " + device.name
-
-  ).join("\n");
-
-  alert("Olemasolevad seadmed:\n\n" + names);
-
-}
-function startPairing() {
-
-  alert("Uue seadme paaritamine tehakse telefonis Smart Life / Tuya kaudu. Pärast paaritamist ilmub seade siia olemasolevate seadmete nimekirja.");
-
-}
 function saveLocal() {
 
   localStorage.setItem(
@@ -664,6 +649,11 @@ function renderDevices() {
   const box = document.getElementById("devices");
 
   box.innerHTML = "";
+
+  if (devices.length === 0) {
+    box.innerHTML = '<div class="card"><h2>Seadmeid pole veel ühendatud</h2><p>Boileri ja põrandakütte ühendus lisatakse pärast ühilduvuse kontrolli.</p></div>';
+    return;
+  }
 
   devices.forEach((d, index) => {
 
@@ -693,13 +683,13 @@ function renderDevices() {
 
       <div class="temp">
 
-        ${d.current.toFixed(1)} °C
+        — °C
 
       </div>
 
       <div class="small">
 
-        Hetketemperatuur
+        Hetketemperatuur (ühendus puudub)
 
       </div>
 
@@ -904,51 +894,20 @@ function closeAdd() {
 }
 
 function addDevice() {
-
   const name = document.getElementById("newName").value.trim();
-
   const type = document.getElementById("newType").value;
-
   if (!name) {
-
     alert("Sisesta seadme nimi.");
-
     return;
-
   }
-
   devices.push({
-
-    name: name,
-
-    type: type,
-
-    current: 20,
-
-    mode: "AUTO",
-
-    restTemp: 20,
-
-    heatTemp: 25,
-
-    minTemp: 18,
-
-    cheapHours: 3,
-
-    readyTime: "18:00",
-
-    consecutive: "no",
-
-    spotControl: true
-
+    name, type, mode: "VÄLJAS", restTemp: 20, heatTemp: 25,
+    minTemp: 18, cheapHours: 3, readyTime: "18:00",
+    consecutive: "no", spotControl: false
   });
-
   saveLocal();
-
   closeAdd();
-
   renderDevices();
-
 }
 
 renderDevices();
