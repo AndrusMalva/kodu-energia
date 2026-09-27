@@ -601,7 +601,13 @@ select {
   <div class="modal">
 
     <h2>Lisa seade</h2>
+<div style="display:flex; gap:10px; margin:18px 0;">
 
+  <button type="button" onclick="showExistingDevices()">Lisa olemasolev seade</button>
+
+  <button type="button" onclick="startPairing()">Paarita uus seade</button>
+
+</div>
     <label>
 
       Seadme nimi
@@ -649,7 +655,17 @@ let devices =
   JSON.parse(localStorage.getItem("koduEnergiaDevices"))
 
   || defaultDevices;
+function showExistingDevices() {
 
+  alert("Olemasolevate seadmete loend lisame järgmises etapis.");
+
+}
+
+function startPairing() {
+
+  alert("Uue seadme paaritamise lisame järgmises etapis.");
+
+}
 function saveLocal() {
 
   localStorage.setItem(
