@@ -24,8 +24,6 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - name: Sea uus äpp avaleheks
-        run: cp kodu-energia-graafik.html index.html
       - name: Laadi Eleringi Eesti börsihinnad
         run: |
           python3 - <<'PY'
