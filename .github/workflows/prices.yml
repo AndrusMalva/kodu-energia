@@ -31,13 +31,15 @@ jobs:
           import json
           import urllib.parse
           import urllib.request
+          from zoneinfo import ZoneInfo
 
           now = dt.datetime.now(dt.timezone.utc)
-          start = now - dt.timedelta(hours=2)
-          end = now + dt.timedelta(hours=40)
+          local_day = now.astimezone(ZoneInfo('Europe/Tallinn')).date()
+          start = dt.datetime.combine(local_day, dt.time(), ZoneInfo('Europe/Tallinn'))
+          end = dt.datetime.combine(local_day + dt.timedelta(days=2), dt.time(), ZoneInfo('Europe/Tallinn')) - dt.timedelta(seconds=1)
           params = urllib.parse.urlencode({
-              'start': start.isoformat(timespec='seconds').replace('+00:00', 'Z'),
-              'end': end.isoformat(timespec='seconds').replace('+00:00', 'Z'),
+              'start': start.astimezone(dt.timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z'),
+              'end': end.astimezone(dt.timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z'),
           })
           url = 'https://dashboard.elering.ee/api/nps/price?' + params
           request = urllib.request.Request(url, headers={'User-Agent': 'KoduEnergia/1.0'})
@@ -51,7 +53,7 @@ jobs:
           if not prices or not any(p['timestamp'] <= now.timestamp() < p['timestamp'] + 900 for p in prices):
               raise RuntimeError('Praeguse 15-minutilise perioodi Eesti hind puudub')
           with open('prices.json', 'w', encoding='utf-8') as output:
-              json.dump({'generatedAt': int(now.timestamp()), 'prices': prices}, output,
+              json.dump({'generatedAt': int(now.timestamp()), 'source': 'Elering', 'unit': 'EUR/MWh', 'vatIncluded': False, 'prices': prices}, output,
                         ensure_ascii=False, separators=(',', ':'))
           print(f'Laaditud {len(prices)} Eesti börsihinna perioodi')
           PY
