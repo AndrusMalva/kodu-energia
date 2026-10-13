@@ -8,7 +8,7 @@
 </style></head><body>
 <header><div class="inner"><div class="brand"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 15L16 5l12 10v13H4Z" fill="none" stroke="white" stroke-width="2"/><path d="M18 10l-7 11h6l-2 8 8-13h-6Z" fill="#f6c84d"/></svg>Kodu Energia</div><span class="version">Veebi eelvaade 0.3</span></div></header>
 <div class="banner"><span><strong>Tuya · ainult lugemine.</strong> Tegelike seadmenäitude kuvamiseks ava „Ühendus”. Kütteplaanid on eelvaade, mitte juhtimiskäsud. Reeglid jäävad sellesse brauserisse; Androidi sünkroonimine puudub.</span></div>
-<main><div class="title-row"><div><h1>Kodu ülevaade</h1><div class="sub" id="date"></div></div><div class="actions"><button id="refresh">Uuenda hindu</button><button id="connectionBtn">Ühendus</button><button id="sourceBtn">Andmete allikas</button></div></div>
+<main><div class="title-row"><div><h1>Kodu ülevaade</h1><div class="sub" id="date"></div></div><div class="actions"><button id="refresh">Uuenda hindu</button><button id="connectionBtn">Ühendus</button><button id="sourceBtn">Andmete allikas</button><button id="exportRules">Ekspordi reeglid</button></div></div>
 <div class="summary"><div class="metric"><div class="label">Elektrihind praegu</div><div class="value" id="nowPrice">—</div><div class="sub" id="priceState" aria-live="polite">Hindade laadimine…</div></div><div class="metric"><div class="label">Tänane hinnavahemik</div><div class="value" id="priceRange">—</div><div class="sub">s/kWh · koos 24% käibemaksuga</div></div><div class="metric"><div class="label">Seadmete ühendus</div><div class="value" id="connectionState">Ühendamata</div><div class="sub" id="syncState" aria-live="polite">Veebireeglite laadimine…</div></div></div>
 <div class="workspace"><section class="panel"><div class="section-head"><h2>Elektrihinnad</h2><div class="tabs"><button class="small active" data-day="today">Täna</button><button class="small" data-day="tomorrow">Homme</button><button class="small" data-day="both">48 tundi</button></div></div><div class="legend"><span><i class="dot"></i>Hind</span><span><i class="dot amber"></i>Praegune periood</span><span><i class="dot green"></i>Kavandatud küte (näidis)</span></div><div id="graph" class="graph"></div><div id="graphTip" class="graph-tip" aria-live="polite">Vali hinnatulp, et näha täpset aega ja hinda.</div><div class="section-head graph-note"><span id="graphStatus"></span><button id="tableBtn" class="small">Hinnad tabelina</button></div></section>
 <section class="panel"><div class="section-head"><h2>Kütteplaanid</h2><span class="chip preview">Näidis</span></div><div class="sub">Valitud reeglite järgi arvutatud tulevased ajad</div><div id="plans"></div><div class="foot">Roheline riba märgib kavandatud aega. See ei näita seadme tegelikku töötamist.</div></section></div>
@@ -16,6 +16,40 @@
 <dialog id="editor"><form id="rulesForm"><div class="dialog-head section-head"><div><h2 id="editorTitle">Seadme reeglid</h2><div class="sub">Selle brauseri veebieelvaate seadistused</div></div><button type="button" data-close aria-label="Sulge">Sulge</button></div><div class="dialog-body"><div class="field-grid"><label class="field full">Seadme nimi<input id="deviceName" required maxlength="60"></label><label class="field">Režiim<select id="mode"><option value="AUTO">AUTO</option><option value="MANUAL">MANUAL · käsitsi</option><option value="OFF">OFF · väljas</option></select></label><label class="field">Käsitsi sihttemperatuur (°C)<input id="manual" type="number" step="0.5" required inputmode="decimal"></label><label class="field">Puhketemperatuur (°C)<input id="rest" type="number" step="0.5" required inputmode="decimal"></label><label class="field">Miinimumtemperatuur (°C)<input id="minimum" type="number" step="0.5" required inputmode="decimal"></label><label class="field">Odav kütteaeg kokku (tundi)<input id="hours" type="number" min="0.25" max="24" step="0.25" required inputmode="decimal"></label><label class="field">Otsinguaken enne valmisolekut (tundi)<input id="lead" type="number" min="0.25" max="48" step="0.25" required inputmode="decimal"></label></div><div class="checks"><label><input id="enabled" type="checkbox">Börsijuhtimine sees</label><label><input id="separate" type="checkbox">Odavad ajad võivad olla jagatud</label><label><input id="hold" type="checkbox">Hoia soojust pärast valmisolekuaega</label></div><div class="section-head"><h3>Valmisolekuajad</h3><button type="button" class="small" id="addReady">+ Lisa aeg</button></div><div id="readyRows"></div><div class="sub">Igal valmisolekuajal on oma nimi, sihttemperatuur ja nädalapäevad.</div><p class="form-error" id="formError" role="alert"></p></div><footer><button type="button" id="removeDevice">Eemalda näidisseade</button><button class="primary" type="submit">Salvesta eelvaates</button></footer></form></dialog>
 <dialog id="info"><div class="dialog-head section-head"><h2 id="infoTitle"></h2><button data-close>Sulge</button></div><div class="dialog-body" id="infoBody"></div></dialog><div id="toast" class="toast hidden" role="status"></div>
 <script>
+// Portable browser validation. Whitelist fields; never import executable code or credentials.
+function validateRules(rows){
+ if(!Array.isArray(rows)||rows.length>50)throw Error('Failis peab olema kuni 50 seadme reeglite loend.');
+ const ids=new Set(),number=(n,min,max)=>typeof n==='number'&&Number.isFinite(n)&&n>=min&&n<=max;
+ const text=(s,max)=>typeof s==='string'&&s.length<=max;
+ return rows.map(d=>{
+  if(!d||!text(d.id,100)||!d.id||ids.has(d.id)||!text(d.name,60)||!d.name.trim()||!['AUTO','MANUAL','OFF'].includes(d.mode))throw Error('Seadme nimi, tunnus või režiim on vigane või korduv.');
+  ids.add(d.id);
+  for(const k of ['manual','rest','minimum'])if(!number(d[k],-50,150))throw Error('Temperatuur on vigane.');
+  if(d.minimum>d.rest||d.minimum>d.manual||!number(d.hours,.25,24)||!Number.isInteger(d.hours*4)||!number(d.lead,d.hours,48)||!Number.isInteger(d.lead*4))throw Error('Kütteaja või temperatuuripiiride reegel on vigane.');
+  for(const k of ['enabled','separate','hold'])if(typeof d[k]!=='boolean')throw Error('Reegli lüliti väärtus on vigane.');
+  if(!Array.isArray(d.ready)||d.ready.length>20||(d.enabled&&!d.ready.length))throw Error('Valmisolekuajad puuduvad või neid on liiga palju.');
+  const ready=d.ready.map(r=>{
+   if(!r||!text(r.name,40)||!/^([01]\d|2[0-3]):[0-5]\d$/.test(r.time)||!number(r.target,d.minimum,150)||!Array.isArray(r.days)||!r.days.length||r.days.length>7||r.days.some(v=>!Number.isInteger(v)||v<1||v>7)||new Set(r.days).size!==r.days.length)throw Error('Valmisolekuaeg, sihttemperatuur või nädalapäevad on vigased.');
+   return {name:r.name,time:r.time,target:r.target,days:[...r.days]};
+  });
+  return {id:d.id,name:d.name,mode:d.mode,manual:d.manual,rest:d.rest,minimum:d.minimum,hours:d.hours,lead:d.lead,enabled:d.enabled,separate:d.separate,hold:d.hold,ready};
+ });
+}
+function parseRuleFile(text){
+ if(typeof text!=='string'||text.length>262144)throw Error('Reeglifail on liiga suur (kuni 256 KB).');
+ let doc;try{doc=JSON.parse(text)}catch{throw Error('See ei ole loetav JSON-reeglifail.');}
+ if(doc?.format!=='kodu-energia-rules'||doc.version!==1)throw Error('Vali Kodu Energia nupust „Ekspordi reeglid” saadud fail.');
+ return validateRules(doc.devices);
+}
+function saveImportedRules(storage,key,rows,expected){
+ const next=validateRules(rows),previous=storage.getItem(key);
+ if(previous!==expected)throw Error('Reeglid muutusid teises aknas. Ava import uuesti.');
+ // Keep an undo copy before overwriting. Failed storage never changes active UI state.
+ storage.setItem(key+'-before-import',JSON.stringify({value:previous}));
+ storage.setItem(key,JSON.stringify(next));
+ return next;
+}
+
 // Prices are EUR/MWh without VAT. Only the display conversion adds VAT.
 const centsWithVat = value => value / 10 * 1.24;
 function normalizePrices(rows, start, end) {
@@ -98,6 +132,18 @@ if(document.modelContext?.registerTool){
  register({name:'start_preview_rule_edit',description:'Open the rule editor for an example device. Does not save rules or control real devices.',inputSchema:{type:'object',properties:{deviceId:{type:'string'}},required:['deviceId'],additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},execute:input=>{if(!input||typeof input.deviceId!=='string'||!devices.some(d=>d.id===input.deviceId))throw Error('Unknown preview device');openEditor(input.deviceId);return {editorOpened:true,deviceId:input.deviceId,preview:true}}});
  window.addEventListener('pagehide',()=>lifecycle.abort(),{once:true});
 }
+
+$('exportRules').onclick=()=>{
+ try{
+  const raw=localStorage.getItem(KEY);
+  if(raw===null)throw Error('Selles brauseris pole salvestatud veebireegleid. Ava see leht brauseris, kus reeglid salvestasid. Androidi reegleid see nupp ei ekspordi.');
+  const rows=validateRules(JSON.parse(raw));
+  const payload={format:'kodu-energia-rules',version:1,exportedAt:new Date().toISOString(),devices:rows};
+  const url=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='kodu-energia-reeglid.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+  $('infoTitle').textContent='Reeglifail valmis';$('infoBody').innerHTML='<p>Salvesta <strong>kodu-energia-reeglid.json</strong>. Failis on '+rows.length+' seadme reeglid. Algsed reeglid jäid alles.</p><p>Ava <a href="https://kodu-energia-veeb-andrus.bbt-meeskond-8339.chatgpt.site/dashboard">privaatne põhivaade</a>, vajuta „Too reeglid üle” ja vali see fail. Enne salvestamist kontrolli eelvaadet.</p><p>Tuya võtmeid failis pole. Seadmete nimed ja kütteajad on sinu andmed; faili pole vaja vestlusse saata.</p>';$('info').showModal();
+ }catch(e){$('infoTitle').textContent='Reegleid ei eksporditud';$('infoBody').textContent=e.message;$('info').showModal()}
+};
+
 render();loadCloud();loadConnection();fetchPrices();setInterval(()=>{loadConnection()},60000);setInterval(fetchPrices,15*60*1000);setInterval(render,60*1000);
 </script></body></html>
 
